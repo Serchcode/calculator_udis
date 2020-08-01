@@ -25,4 +25,4 @@ urlpatterns = [
     path('', include('converter.urls')),
     url(r'^docs/(?P<path>.*)$', django.views.static.serve, {'document_root': settings.DOCS_ROOT}),
     url(r'^docs/', django.views.static.serve, {'document_root': settings.DOCS_ROOT, 'path': 'index.html'})
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

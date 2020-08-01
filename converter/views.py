@@ -4,7 +4,10 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.http import HttpResponse
 import requests
-import pdb
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 class MainView(View):
@@ -52,11 +55,11 @@ class ConverterView(View):
         # make the request to banxico's api
         start_date = request.POST["trip-start"]
         end_date = request.POST["trip-end"]
-        url = "https://www.banxico.org.mx/SieAPIRest/service/v1/series/SP68257,SF60653/datos/{}/{}".format(
+        url = os.getenv("URL_BANXICO").format(
             start_date, end_date
         )
         headers = {
-            "Bmx-Token": "b48d7c49207d8dd99dc061617e5075807ac2e73efb6343f9db1ade3785fea29b"
+            "Bmx-Token": os.getenv("TOKEN_BANXICO")
         }
         req = requests.get(url, headers=headers)
         res = req.json()
@@ -140,11 +143,11 @@ class TiieView(View):
         """
         start_date = request.POST["trip-start"]
         end_date = request.POST["trip-end"]
-        url = "https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF17801,SF283,SF221962/datos/{}/{}".format(
+        url = os.getenv("URL_BANXICO").format(
             start_date, end_date
         )
         headers = {
-            "Bmx-Token": "b48d7c49207d8dd99dc061617e5075807ac2e73efb6343f9db1ade3785fea29b"
+            "Bmx-Token": os.getenv("TOKEN_BANXICO")
         }
         req = requests.get(url, headers=headers)
         res = req.json()
