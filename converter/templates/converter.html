@@ -1,0 +1,246 @@
+{%extends 'base.html'%}
+{%load static%}
+{%block content%}
+<style>
+    .custom-scrollbar {
+        position: relative;
+        height: 200px;
+        overflow: auto;
+    }
+
+    .table-wrapper-scroll-y {
+        display: block;
+    }
+    a{
+        text-decoration: none;
+        color: black;
+    }
+    a:hover{
+        color: black;
+    }
+</style>
+<div class="container">
+    <h1><strong>Calculator Dollars & Udis</strong></h1>
+    <a href="{%url 'main'%}">
+        <h2><i class="fa fa-arrow-left" aria-hidden="true"></i> Return</i>
+        </h2>
+    </a>
+    <div class="row">
+        <div class="col-lg-12">
+            <br>
+            <form method="POST" action=".">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-3 col-md-12 col-sm-12">
+                        <label for="start">Start date:</label>
+                        <input type="date" id="start" name="trip-start" required>
+                    </div>
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <label for="end">End date:</label>
+                        <input type="date" id="final" name="trip-end" required>
+                        <input class="btn btn-primary" type="submit" value="Submit">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4">
+            <br>
+            <h2><strong>Dollars</strong></h2>
+            <h4>dollars max value = ${{d_max}} MXN</h4>
+            <h4>dollars min value = ${{d_min}} MXN</h4>
+            <h4>dollars average = ${{d_average}} MXN</h4>
+            <div class="table-wrapper-scroll-y custom-scrollbar">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Quantity MXN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%if dolares%}
+                        {% for d in dolares %}
+                        <tr>
+                            <td>{{d.fecha}}</td>
+                            <td>${{d.dato}} MXN</td>
+                        </tr>
+                        {%endfor%}
+                        {%else%}
+                        <tr>
+                            <td>No data available</td>
+                        </tr>
+                        {%endif%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <canvas id="line-chart"></canvas>
+        </div>
+        <div class="col-lg-4">
+            <br>
+            <h2><strong>Udis</strong></h2>
+            <h4>udis max value = ${{u_max}} MXN</h4>
+            <h4>udis min value = ${{u_min}} MXN</h4>
+            <h4>udis average = ${{u_average}} MXN</h4>
+            <div class="table-wrapper-scroll-y custom-scrollbar">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Quantity MXN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%if udis%}
+                        {% for u in udis %}
+                        <tr>
+                            <td>{{u.fecha}}</td>
+                            <td>${{u.dato}} MXN</td>
+                        </tr>
+                        {% endfor %}
+                        {%else%}
+                        <tr>
+                            <td>No data available</td>
+                        </tr>
+                        {%endif%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <canvas id="line-chart2"></canvas>
+        </div>
+    </div>
+    {%block extrajs%}
+    <script>
+
+        var labels_d = {{ labels_d| safe}};
+        var data_d = {{ graph_d| safe}};
+        var chartOptions = {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    boxWidth: 0,
+                    fontColor: 'black'
+                }
+            },
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        display: true,
+                        color: "#e0e0e0",
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Date",
+                        fontColor: "black"
+                    }
+                }],
+                yAxes: [{
+                    gridLines: {
+                        display: true,
+                        color: "#e0e0e0",
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Price of dolllar in mxn",
+                        fontColor: "black"
+                    }
+                }]
+            }
+        };
+
+        new Chart(document.getElementById("line-chart"), {
+            type: 'line',
+            data: {
+                labels: labels_d,
+                datasets: [
+                    {
+                        label: 'Price',
+                        borderColor: 'indigo',
+                        backgroundColor: 'transparent',
+                        pointBorderColor: 'black',
+                        pointBackgroundColor: 'black',
+                        borderDash: [0, 0],
+                        pointRadius: 5,
+                        pointHoverRadius: 10,
+                        pointHitRadius: 30,
+                        pointBorderWidth: 2,
+                        pointStyle: 'rectRounded',
+                        data: data_d,
+                    }
+                ]
+            },
+            options: chartOptions,
+        });
+    </script>
+    <script>
+        var labels_u = {{ labels_u| safe}};
+        var data_u = {{ graph_u| safe}};
+        var chartOptions = {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    boxWidth: 0,
+                    fontColor: 'black'
+                }
+            },
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        display: true,
+                        color: "#e0e0e0",
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Date",
+                        fontColor: "black"
+                    }
+                }],
+                yAxes: [{
+                    gridLines: {
+                        display: true,
+                        color: "#e0e0e0",
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Price of udis in mxn",
+                        fontColor: "black"
+                    }
+                }]
+            }
+        };
+
+        new Chart(document.getElementById("line-chart2"), {
+            type: 'line',
+            data: {
+                labels: labels_u,
+                datasets: [
+                    {
+                        label: 'Price',
+                        borderColor: 'indigo',
+                        backgroundColor: 'transparent',
+                        pointBorderColor: 'black',
+                        pointBackgroundColor: 'black',
+                        borderDash: [0, 0],
+                        pointRadius: 5,
+                        pointHoverRadius: 10,
+                        pointHitRadius: 30,
+                        pointBorderWidth: 2,
+                        pointStyle: 'rectRounded',
+                        data: data_u,
+                    }
+                ]
+            },
+            options: chartOptions,
+        });
+    </script>
+    {%endblock extrajs%}
+    {%endblock content%}

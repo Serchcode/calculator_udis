@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>converter.views &#8212; documentación de Calculator - 1</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/translations.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Búsqueda" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Código fuente para converter.views</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Imports.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+<span class="kn">from</span> <span class="nn">django.views.generic</span> <span class="kn">import</span> <span class="n">View</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">pdb</span>
+
+
+<div class="viewcode-block" id="MainView"><a class="viewcode-back" href="../../modules/views.html#converter.views.MainView">[documentos]</a><span class="k">class</span> <span class="nc">MainView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main View.</span>
+
+<span class="sd">    This view show the main of converter template</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MainView.get"><a class="viewcode-back" href="../../modules/views.html#converter.views.MainView.get">[documentos]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get method.</span>
+
+<span class="sd">        This metod get render template &quot;main&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;main.html&quot;</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">template_name</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ConverterView"><a class="viewcode-back" href="../../modules/views.html#converter.views.ConverterView">[documentos]</a><span class="k">class</span> <span class="nc">ConverterView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converter View.</span>
+
+<span class="sd">    This view show the converter template</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ConverterView.get"><a class="viewcode-back" href="../../modules/views.html#converter.views.ConverterView.get">[documentos]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get method.</span>
+
+<span class="sd">        This metod get render template &quot;main&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;converter.html&quot;</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">template_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConverterView.post"><a class="viewcode-back" href="../../modules/views.html#converter.views.ConverterView.post">[documentos]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Post method.</span>
+
+<span class="sd">        This method receive two params date-start, date_end and consulting</span>
+<span class="sd">        the information of udis and dollars between date range of two params</span>
+<span class="sd">        in banxico&#39;s api with this information calculate the min, max and</span>
+<span class="sd">        average values of udis and dollars</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># make the request to banxico&#39;s api</span>
+        <span class="n">start_date</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s2">&quot;trip-start&quot;</span><span class="p">]</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s2">&quot;trip-end&quot;</span><span class="p">]</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.banxico.org.mx/SieAPIRest/service/v1/series/SP68257,SF60653/datos/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span>
+        <span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Bmx-Token&quot;</span><span class="p">:</span> <span class="s2">&quot;b48d7c49207d8dd99dc061617e5075807ac2e73efb6343f9db1ade3785fea29b&quot;</span>
+        <span class="p">}</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;bmx&quot;</span><span class="p">][</span><span class="s2">&quot;series&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">series</span><span class="p">:</span>
+            <span class="n">s</span><span class="p">[</span><span class="s2">&quot;datos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">([]</span> <span class="k">if</span> <span class="s1">&#39;datos&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s</span> <span class="k">else</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;datos&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;idSerie&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SF60653&quot;</span><span class="p">:</span>
+                <span class="n">dollars</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;datos&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;idSerie&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SP68257&quot;</span><span class="p">:</span>
+                <span class="n">udis</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;datos&quot;</span><span class="p">]</span>
+        <span class="c1"># obtain data for dolars</span>
+        <span class="n">info_dollars</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item_dolar</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;dato&quot;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">item_dolar</span> <span class="ow">in</span> <span class="n">dollars</span>
+        <span class="p">]</span>
+        <span class="n">date_dollars</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">date_dolar</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;fecha&quot;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">date_dolar</span> <span class="ow">in</span> <span class="n">dollars</span>
+        <span class="p">]</span>
+        <span class="n">labels_d</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;fecha&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">date_dollars</span><span class="p">]</span>
+        <span class="n">data_d</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;dato&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info_dollars</span><span class="p">]</span>
+        <span class="n">graph_d</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;dato&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info_dollars</span><span class="p">]</span>
+        <span class="n">d_max</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">data_d</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_d</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">d_min</span> <span class="o">=</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">data_d</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_d</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">d_average</span> <span class="o">=</span> <span class="p">((</span><span class="nb">sum</span><span class="p">(</span><span class="n">data_d</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_d</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_d</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># obtain data for udis</span>
+        <span class="n">info_udis</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item_udis</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;dato&quot;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">item_udis</span> <span class="ow">in</span> <span class="n">udis</span>
+        <span class="p">]</span>
+        <span class="n">date_udis</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">date_udis</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;fecha&quot;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">date_udis</span> <span class="ow">in</span> <span class="n">udis</span>
+        <span class="p">]</span>
+        <span class="n">labels_u</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;fecha&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">date_udis</span><span class="p">]</span>
+        <span class="n">data_u</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;dato&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info_udis</span><span class="p">]</span>
+        <span class="n">graph_u</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;dato&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info_udis</span><span class="p">]</span>
+        <span class="n">u_max</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">data_u</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_u</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">u_min</span> <span class="o">=</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">data_u</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_u</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">u_average</span> <span class="o">=</span> <span class="p">((</span><span class="nb">sum</span><span class="p">(</span><span class="n">data_u</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">data_u</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_u</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># construct the context</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;d_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d_max</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;d_min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d_min</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;d_average&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d_average</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;dolares&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dollars</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;labels_d&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_d</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;graph_d&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph_d</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;u_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_max</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;u_min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_min</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;u_average&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_average</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;labels_u&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_u</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;graph_u&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph_u</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;udis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">udis</span>
+        <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;converter.html&quot;</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TiieView"><a class="viewcode-back" href="../../modules/views.html#converter.views.TiieView">[documentos]</a><span class="k">class</span> <span class="nc">TiieView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tiie View.</span>
+
+<span class="sd">    This view show the Tiee template</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TiieView.get"><a class="viewcode-back" href="../../modules/views.html#converter.views.TiieView.get">[documentos]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get method.</span>
+
+<span class="sd">        This metod get render template &quot;tiie&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;tiie.html&quot;</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">template_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TiieView.post"><a class="viewcode-back" href="../../modules/views.html#converter.views.TiieView.post">[documentos]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Post method.</span>
+
+<span class="sd">        This metod post make a request to baxico&#39;s api for consulting the</span>
+<span class="sd">        value of tiie in their diferent values between interval of dates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_date</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s2">&quot;trip-start&quot;</span><span class="p">]</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">[</span><span class="s2">&quot;trip-end&quot;</span><span class="p">]</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF17801,SF283,SF221962/datos/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span>
+        <span class="p">)</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Bmx-Token&quot;</span><span class="p">:</span> <span class="s2">&quot;b48d7c49207d8dd99dc061617e5075807ac2e73efb6343f9db1ade3785fea29b&quot;</span>
+        <span class="p">}</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;bmx&quot;</span><span class="p">][</span><span class="s2">&quot;series&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">series</span><span class="p">:</span>
+            <span class="n">s</span><span class="p">[</span><span class="s2">&quot;datos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">([]</span> <span class="k">if</span> <span class="s1">&#39;datos&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s</span> <span class="k">else</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;datos&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;idSerie&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SF283&quot;</span><span class="p">:</span>
+                <span class="n">tiie28</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;datos&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;idSerie&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SF17801&quot;</span><span class="p">:</span>
+                <span class="n">tiie91</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;datos&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;idSerie&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SF221962&quot;</span><span class="p">:</span>
+                <span class="n">tiie182</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;datos&quot;</span><span class="p">]</span>
+        <span class="c1"># info tiie28</span>
+        <span class="n">info_tiie28</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item_tiie28</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;dato&quot;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">item_tiie28</span> <span class="ow">in</span> <span class="n">tiie28</span>
+        <span class="p">]</span>
+        <span class="n">date_tiie28</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">date_tiie28</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;fecha&quot;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">date_tiie28</span> <span class="ow">in</span> <span class="n">tiie28</span>
+        <span class="p">]</span>
+        <span class="n">labels_tiie28</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;fecha&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">date_tiie28</span><span class="p">]</span>
+        <span class="n">data_tiie28</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;dato&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info_tiie28</span><span class="p">]</span>
+        <span class="n">graph_tiie28</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;dato&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info_tiie28</span><span class="p">]</span>
+        <span class="n">tiie28_max</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">data_tiie28</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_tiie28</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># info_tiee91</span>
+        <span class="n">info_tiie91</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item_tiie91</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;dato&quot;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">item_tiie91</span> <span class="ow">in</span> <span class="n">tiie91</span>
+        <span class="p">]</span>
+        <span class="n">date_tiie91</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">date_tiie91</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;fecha&quot;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">date_tiie91</span> <span class="ow">in</span> <span class="n">tiie91</span>
+        <span class="p">]</span>
+        <span class="n">labels_tiie91</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;fecha&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">date_tiie91</span><span class="p">]</span>
+        <span class="n">data_tiie91</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;dato&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info_tiie91</span><span class="p">]</span>
+        <span class="n">graph_tiie91</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;dato&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info_tiie91</span><span class="p">]</span>
+        <span class="n">tiie91_max</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">data_tiie91</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_tiie91</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># info_tiee182</span>
+        <span class="n">info_tiie182</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item_tiie182</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;dato&quot;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">item_tiie182</span> <span class="ow">in</span> <span class="n">tiie182</span>
+        <span class="p">]</span>
+        <span class="n">date_tiie182</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">date_tiie182</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="s2">&quot;fecha&quot;</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">date_tiie182</span> <span class="ow">in</span> <span class="n">tiie182</span>
+        <span class="p">]</span>
+        <span class="n">labels_tiie182</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;fecha&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">date_tiie182</span><span class="p">]</span>
+        <span class="n">data_tiie182</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;dato&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info_tiie182</span><span class="p">]</span>
+        <span class="n">graph_tiie182</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;dato&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">info_tiie182</span><span class="p">]</span>
+        <span class="n">tiie182_max</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">data_tiie182</span><span class="p">)</span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_tiie182</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># context</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;tiie28_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tiie28_max</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;labels_tiie28&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_tiie28</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;graph_tiie28&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph_tiie28</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;tiie28&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tiie28</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;tiie91_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tiie91_max</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;labels_tiie91&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_tiie91</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;graph_tiie91&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph_tiie91</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;tiie91&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tiie91</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;tiie182_max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tiie182_max</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;labels_tiie182&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_tiie182</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;graph_tiie182&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph_tiie182</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">&quot;tiie182&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tiie182</span>
+        <span class="n">template_name</span> <span class="o">=</span> <span class="s2">&quot;tiie.html&quot;</span>
+        <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Calculator</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navegación</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/views.html">Views</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Código de módulo</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Búsqueda rápida</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Ir a" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Sergio Pérez.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

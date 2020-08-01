@@ -1,0 +1,435 @@
+{%extends 'base.html'%}
+{%load static%}
+
+{%block content%}
+<style>
+    .custom-scrollbar {
+        position: relative;
+        height: 200px;
+        overflow: auto;
+    }
+
+    .table-wrapper-scroll-y {
+        display: block;
+    }
+    a{
+        text-decoration: none;
+        color: black;
+    }
+    a:hover{
+        color: black;
+    }
+</style>
+<div class="container">
+    <h1><strong>Tiie</strong></h1>
+    <a href="{%url 'main'%}">
+        <h2><i class="fa fa-arrow-left" aria-hidden="true"></i> Return</i>
+        </h2>
+    </a>
+    <div class="row">
+        <div class="col-lg-12">
+            <br>
+            <form method="POST" action=".">
+                {% csrf_token %}
+                <label for="start">Start date:</label>
+                <input type="date" id="start" name="trip-start" required>
+                <label for="end">End date:</label>
+                <input type="date" id="final" name="trip-end" required>
+                <input class="btn btn-primary" type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4">
+            <br>
+            <h2><strong>Tiee 28 days</strong></h2>
+            <h4>Tiee 28 max value = ${{tiie28_max}} MXN</h4>
+            <div class="table-wrapper-scroll-y custom-scrollbar">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Quantity MXN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%if tiie28%}
+                        {% for t in tiie28 %}
+                        <tr>
+                            <td>{{t.fecha}}</td>
+                            <td>${{t.dato}} MXN</td>
+                        </tr>
+                        {% endfor %}
+                        {%else%}
+                        <tr>
+                            <td>No data available</td>
+                        </tr>
+                        {%endif%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <canvas id="line-chart"></canvas>
+        </div>
+        <div class="col-lg-4">
+            <br>
+            <h2><strong>Tiee 91 days</strong></h2>
+            <h4>Tiee 91 max value = ${{tiie91_max}} MXN</h4>
+            <div class="table-wrapper-scroll-y custom-scrollbar">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Quantity MXN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%if tiie91%}
+                        {% for t in tiie91 %}
+                        <tr>
+                            <td>{{t.fecha}}</td>
+                            <td>${{t.dato}} MXN</td>
+                        </tr>
+                        {% endfor %}
+                        {%else%}
+                        <tr>
+                            <td>No data available</td>
+                        </tr>
+                        {%endif%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <canvas id="line-chart2"></canvas>
+        </div>
+        <div class="col-lg-4">
+            <br>
+            <h2><strong>Tiee 182 days</strong></h2>
+            <h4>Tiee 182 max value = ${{tiie182_max}} MXN</h4>
+            <div class="table-wrapper-scroll-y custom-scrollbar">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Quantity MXN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%if tiie182%}
+                        {% for t in tiie182 %}
+                        <tr>
+                            <td>{{t.fecha}}</td>
+                            <td>${{t.dato}} MXN</td>
+                        </tr>
+                        {% endfor %}
+                        {%else%}
+                        <tr>
+                            <td>No data available</td>
+                        </tr>
+                        {%endif%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <canvas id="line-chart3"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <canvas id="line-chart4"></canvas>
+    </div>
+</div>
+{%block extrajs%}
+<script>
+
+    var labels = {{ labels_tiie28| safe}};
+    var data = {{ graph_tiie28| safe}};
+    var chartOptions = {
+        legend: {
+            display: true,
+            position: 'top',
+            labels: {
+                boxWidth: 0,
+                fontColor: 'black'
+            }
+        },
+        scales: {
+            xAxes: [{
+                gridLines: {
+                    display: true,
+                    color: "#e0e0e0",
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: "Date",
+                    fontColor: "black"
+                }
+            }],
+            yAxes: [{
+                gridLines: {
+                    display: true,
+                    color: "#e0e0e0",
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: "Price",
+                    fontColor: "black"
+                }
+            }]
+        }
+    };
+
+    new Chart(document.getElementById("line-chart"), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Price',
+                    borderColor: 'indigo',
+                    backgroundColor: 'transparent',
+                    pointBorderColor: 'black',
+                    pointBackgroundColor: 'black',
+                    borderDash: [0, 0],
+                    pointRadius: 5,
+                    pointHoverRadius: 10,
+                    pointHitRadius: 30,
+                    pointBorderWidth: 2,
+                    pointStyle: 'rectRounded',
+                    data: data,
+                }
+            ]
+        },
+        options: chartOptions,
+    });
+</script>
+<script>
+
+    var labels = {{ labels_tiie91| safe}};
+    var data = {{ graph_tiie91| safe}};
+    var chartOptions = {
+        legend: {
+            display: true,
+            position: 'top',
+            labels: {
+                boxWidth: 0,
+                fontColor: 'black'
+            }
+        },
+        scales: {
+            xAxes: [{
+                gridLines: {
+                    display: true,
+                    color: "#e0e0e0",
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: "Date",
+                    fontColor: "black"
+                }
+            }],
+            yAxes: [{
+                gridLines: {
+                    display: true,
+                    color: "#e0e0e0",
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: "Price",
+                    fontColor: "black"
+                }
+            }]
+        }
+    };
+
+    new Chart(document.getElementById("line-chart2"), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Price',
+                    borderColor: 'indigo',
+                    backgroundColor: 'transparent',
+                    pointBorderColor: 'black',
+                    pointBackgroundColor: 'black',
+                    borderDash: [0, 0],
+                    pointRadius: 5,
+                    pointHoverRadius: 10,
+                    pointHitRadius: 30,
+                    pointBorderWidth: 2,
+                    pointStyle: 'rectRounded',
+                    data: data,
+                }
+            ]
+        },
+        options: chartOptions,
+    });
+</script>
+<script>
+
+    var labels = {{ labels_tiie182| safe}};
+    var data = {{ graph_tiie182| safe}};
+    var chartOptions = {
+        legend: {
+            display: true,
+            position: 'top',
+            labels: {
+                boxWidth: 0,
+                fontColor: 'black'
+            }
+        },
+        scales: {
+            xAxes: [{
+                gridLines: {
+                    display: true,
+                    color: "#e0e0e0",
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: "Date",
+                    fontColor: "black"
+                }
+            }],
+            yAxes: [{
+                gridLines: {
+                    display: true,
+                    color: "#e0e0e0",
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: "Price",
+                    fontColor: "black"
+                }
+            }]
+        }
+    };
+
+    new Chart(document.getElementById("line-chart3"), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Price',
+                    borderColor: 'indigo',
+                    backgroundColor: 'transparent',
+                    pointBorderColor: 'black',
+                    pointBackgroundColor: 'black',
+                    borderDash: [0, 0],
+                    pointRadius: 5,
+                    pointHoverRadius: 10,
+                    pointHitRadius: 30,
+                    pointBorderWidth: 2,
+                    pointStyle: 'rectRounded',
+                    data: data,
+                }
+            ]
+        },
+        options: chartOptions,
+    });
+</script>
+<script>
+
+    var labels = {{ labels_tiie28| safe}};
+    var data = {{ graph_tiie28| safe}};
+    var labels2 = {{ labels_tiie91| safe}};
+    var data2 = {{ graph_tiie91| safe}};
+    var labels3 = {{ labels_tiie182| safe}};
+    var data3 = {{ graph_tiie182| safe}};
+    var chartOptions = {
+        legend: {
+            display: true,
+            position: 'top',
+            labels: {
+                boxWidth: 50,
+                fontColor: 'black'
+            }
+        },
+        scales: {
+            xAxes: [{
+                gridLines: {
+                    display: true,
+                    color: "#e0e0e0",
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: "Date",
+                    fontColor: "black"
+                }
+            }],
+            yAxes: [{
+                gridLines: {
+                    display: true,
+                    color: "#e0e0e0",
+                },
+                scaleLabel: {
+                    display: true,
+                    labelString: "Price",
+                    fontColor: "black"
+                }
+            }]
+        }
+    };
+
+    new Chart(document.getElementById("line-chart4"), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Tiie28',
+                    borderColor: 'red',
+                    backgroundColor: 'transparent',
+                    pointBorderColor: 'black',
+                    pointBackgroundColor: 'black',
+                    borderDash: [0, 0],
+                    pointRadius: 5,
+                    pointHoverRadius: 10,
+                    pointHitRadius: 30,
+                    pointBorderWidth: 2,
+                    pointStyle: 'rectRounded',
+                    data: data,
+                },
+                {
+                    label: 'Tiie91',
+                    borderColor: 'green',
+                    backgroundColor: 'transparent',
+                    pointBorderColor: 'black',
+                    pointBackgroundColor: 'black',
+                    borderDash: [0, 0],
+                    pointRadius: 5,
+                    pointHoverRadius: 10,
+                    pointHitRadius: 30,
+                    pointBorderWidth: 2,
+                    pointStyle: 'rectRounded',
+                    data: data2,
+                },
+                {
+                    label: 'Tiie182',
+                    borderColor: 'blue',
+                    backgroundColor: 'transparent',
+                    pointBorderColor: 'black',
+                    pointBackgroundColor: 'black',
+                    borderDash: [0, 0],
+                    pointRadius: 5,
+                    pointHoverRadius: 10,
+                    pointHitRadius: 30,
+                    pointBorderWidth: 2,
+                    pointStyle: 'rectRounded',
+                    data: data3,
+                }
+
+
+            ]
+        },
+        options: chartOptions,
+    });
+</script>
+
+{%endblock extrajs%}
+{%endblock content%}
