@@ -55,7 +55,7 @@ class ConverterView(View):
         # make the request to banxico's api
         start_date = request.POST["trip-start"]
         end_date = request.POST["trip-end"]
-        url = os.getenv("URL_BANXICO").format(
+        url = os.getenv("URL_DOLLARS").format(
             start_date, end_date
         )
         headers = {
@@ -143,7 +143,7 @@ class TiieView(View):
         """
         start_date = request.POST["trip-start"]
         end_date = request.POST["trip-end"]
-        url = os.getenv("URL_BANXICO").format(
+        url = os.getenv("URL_TIIE").format(
             start_date, end_date
         )
         headers = {
@@ -160,6 +160,7 @@ class TiieView(View):
                 tiie91 = s["datos"]
             if s["idSerie"] == "SF221962":
                 tiie182 = s["datos"]
+        
         # info tiie28
         info_tiie28 = [
             {k: v for k, v in item_tiie28.items() if k in "dato"}
