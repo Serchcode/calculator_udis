@@ -27,6 +27,41 @@ class MainView(View):
         return render(request, template_name)
 
 
+class ExerciseView(View):
+    """
+    exercise View.
+
+    This view show the exercise of find five sequence of digits in number
+    """
+
+    def get(self, request):
+        """
+        Get method.
+
+        This metod get render template "exercise"
+        """
+        template_name = "exercise.html"
+        return render(request, template_name)
+
+    def post(self, request):
+        """
+        Post method.
+
+        This metod post receive a number and find max sequence of five digits
+        in the number
+        """
+        num = int(request.POST["numbers"])
+        number = str(num)
+        values = [number[i:i+5] for i in range(len(number)-4)]
+        context = {}
+        context["number"] = request.POST["numbers"]
+        context["max"] = (
+            max(values) if values else "the number must be contain 5 digits"
+        )
+        template_name = "exercise.html"
+        return render(request, template_name, context)
+
+
 class ConverterView(View):
     """
     Converter View.
@@ -55,17 +90,13 @@ class ConverterView(View):
         # make the request to banxico's api
         start_date = request.POST["trip-start"]
         end_date = request.POST["trip-end"]
-        url = os.getenv("URL_DOLLARS").format(
-            start_date, end_date
-        )
-        headers = {
-            "Bmx-Token": os.getenv("TOKEN_BANXICO")
-        }
+        url = os.getenv("URL_DOLLARS").format(start_date, end_date)
+        headers = {"Bmx-Token": os.getenv("TOKEN_BANXICO")}
         req = requests.get(url, headers=headers)
         res = req.json()
         series = res["bmx"]["series"]
         for s in series:
-            s["datos"] = ([] if 'datos' not in s else s["datos"])
+            s["datos"] = [] if "datos" not in s else s["datos"]
             if s["idSerie"] == "SF60653":
                 dollars = s["datos"]
             if s["idSerie"] == "SP68257":
@@ -82,9 +113,9 @@ class ConverterView(View):
         labels_d = [d["fecha"] for d in date_dollars]
         data_d = [float(d["dato"]) for d in info_dollars]
         graph_d = [d["dato"] for d in info_dollars]
-        d_max = (max(data_d) if len(data_d) > 1 else 0)
-        d_min = (min(data_d) if len(data_d) > 1 else 0)
-        d_average = ((sum(data_d) / len(data_d)) if len(data_d) > 1 else 0)
+        d_max = max(data_d) if len(data_d) > 1 else 0
+        d_min = min(data_d) if len(data_d) > 1 else 0
+        d_average = (sum(data_d) / len(data_d)) if len(data_d) > 1 else 0
         # obtain data for udis
         info_udis = [
             {k: v for k, v in item_udis.items() if k in "dato"}
@@ -97,9 +128,9 @@ class ConverterView(View):
         labels_u = [d["fecha"] for d in date_udis]
         data_u = [float(d["dato"]) for d in info_udis]
         graph_u = [d["dato"] for d in info_udis]
-        u_max = (max(data_u) if len(data_u) > 1 else 0)
-        u_min = (min(data_u) if len(data_u) > 1 else 0)
-        u_average = ((sum(data_u)/len(data_u)) if len(data_u) > 1 else 0)
+        u_max = max(data_u) if len(data_u) > 1 else 0
+        u_min = min(data_u) if len(data_u) > 1 else 0
+        u_average = (sum(data_u) / len(data_u)) if len(data_u) > 1 else 0
         # construct the context
         context = {}
         context["d_max"] = d_max
@@ -143,24 +174,20 @@ class TiieView(View):
         """
         start_date = request.POST["trip-start"]
         end_date = request.POST["trip-end"]
-        url = os.getenv("URL_TIIE").format(
-            start_date, end_date
-        )
-        headers = {
-            "Bmx-Token": os.getenv("TOKEN_BANXICO")
-        }
+        url = os.getenv("URL_TIIE").format(start_date, end_date)
+        headers = {"Bmx-Token": os.getenv("TOKEN_BANXICO")}
         req = requests.get(url, headers=headers)
         res = req.json()
         series = res["bmx"]["series"]
         for s in series:
-            s["datos"] = ([] if 'datos' not in s else s["datos"])
+            s["datos"] = [] if "datos" not in s else s["datos"]
             if s["idSerie"] == "SF283":
                 tiie28 = s["datos"]
             if s["idSerie"] == "SF17801":
                 tiie91 = s["datos"]
             if s["idSerie"] == "SF221962":
                 tiie182 = s["datos"]
-        
+
         # info tiie28
         info_tiie28 = [
             {k: v for k, v in item_tiie28.items() if k in "dato"}
@@ -173,7 +200,7 @@ class TiieView(View):
         labels_tiie28 = [d["fecha"] for d in date_tiie28]
         data_tiie28 = [float(d["dato"]) for d in info_tiie28]
         graph_tiie28 = [d["dato"] for d in info_tiie28]
-        tiie28_max = (max(data_tiie28) if len(data_tiie28) > 0 else 0)
+        tiie28_max = max(data_tiie28) if len(data_tiie28) > 0 else 0
         # info_tiee91
         info_tiie91 = [
             {k: v for k, v in item_tiie91.items() if k in "dato"}
@@ -186,7 +213,7 @@ class TiieView(View):
         labels_tiie91 = [d["fecha"] for d in date_tiie91]
         data_tiie91 = [float(d["dato"]) for d in info_tiie91]
         graph_tiie91 = [d["dato"] for d in info_tiie91]
-        tiie91_max = (max(data_tiie91) if len(data_tiie91) > 0 else 0)
+        tiie91_max = max(data_tiie91) if len(data_tiie91) > 0 else 0
         # info_tiee182
         info_tiie182 = [
             {k: v for k, v in item_tiie182.items() if k in "dato"}
@@ -199,7 +226,7 @@ class TiieView(View):
         labels_tiie182 = [d["fecha"] for d in date_tiie182]
         data_tiie182 = [float(d["dato"]) for d in info_tiie182]
         graph_tiie182 = [d["dato"] for d in info_tiie182]
-        tiie182_max = (max(data_tiie182)if len(data_tiie182) > 0 else 0)
+        tiie182_max = max(data_tiie182) if len(data_tiie182) > 0 else 0
         # context
         context = {}
         context["tiie28_max"] = tiie28_max

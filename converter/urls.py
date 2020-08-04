@@ -6,4 +6,5 @@ urlpatterns = [
     path('', views.MainView.as_view(), name='main'),
     path('converter/', views.ConverterView.as_view(), name='converter'),
     path('tiie/', views.TiieView.as_view(), name='tiee'),
+    path('exercise/', views.ExerciseView.as_view(), name='exercise'),
 ]
